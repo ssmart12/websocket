@@ -37,7 +37,7 @@ wss.on('connection', (ws) => {
         if (currentMode === 'assign') {
           try {
             // Call your external API on Render that checks if RFID is assigned
-            const response = await axios.get('https://smartmonitoringsystem.infy.uk/api/check_rfid.js', {
+            const response = await axios.get('https://smartmonitoringsystem.infy.uk/api/check_rfid.php', {
               params: { rfid: rfidTag },
               timeout: 5000,
             });
