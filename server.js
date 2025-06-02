@@ -1,6 +1,6 @@
 const http = require('http');
 const WebSocket = require('ws');
-const fetch = require('node-fetch');  // Changed here
+// const fetch = require('node-fetch');  <-- REMOVE this line
 
 // Create HTTP server
 const server = http.createServer();
@@ -8,9 +8,8 @@ const wss = new WebSocket.Server({ server });
 console.log('✅ WebSocket Server initialized');
 
 let currentMode = 'attendance'; // Modes: 'assign' or 'attendance'
-const API_URL = 'https://smartmonitoringsystem.infy.uk/check_rfid.php'; // Separate API URL
+const API_URL = 'https://smartmonitoringsystem.infy.uk/check_rfid.php'; // API URL
 
-// Broadcast message to all connected WebSocket clients
 function broadcast(data) {
   const payload = JSON.stringify(data);
   wss.clients.forEach(client => {
@@ -34,7 +33,7 @@ wss.on('connection', (ws) => {
         case 'rfid_scan':
           await handleRfidScan(ws, data.rfid);
           break;
-        
+
         case 'set_mode':
           await handleSetMode(ws, data.mode);
           break;
@@ -53,11 +52,11 @@ wss.on('connection', (ws) => {
   ws.on('error', (err) => console.error('⚠️ WebSocket error:', err));
 });
 
-// Handle RFID Scan
 async function handleRfidScan(ws, rfidTag) {
   try {
     if (currentMode === 'assign') {
       const response = await fetch(`${API_URL}?rfid=${rfidTag}`);
+      if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
 
       if (data.exists) {
@@ -84,7 +83,6 @@ async function handleRfidScan(ws, rfidTag) {
   }
 }
 
-// Handle Mode Change
 async function handleSetMode(ws, mode) {
   if (mode === 'assign' || mode === 'attendance') {
     currentMode = mode;
@@ -95,7 +93,6 @@ async function handleSetMode(ws, mode) {
   }
 }
 
-// Start server
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`🚀 WebSocket server running on port ${PORT}`);
