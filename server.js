@@ -8,7 +8,7 @@ const wss = new WebSocket.Server({ server });
 console.log('✅ WebSocket Server initialized');
 
 let currentMode = 'attendance'; // Modes: 'assign' or 'attendance'
-const API_URL = 'https://smartmonitoringsystem.infy.uk/htdocs/api/check_rfid.php'; // Separate API URL
+const API_URL = 'https://smartmonitoringsystem.infy.uk/htdocs/api/proxy.php'; // Separate API URL
 
 // Broadcast message to all connected WebSocket clients
 function broadcast(data) {
