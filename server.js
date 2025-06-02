@@ -1,6 +1,6 @@
 const http = require('http');
 const WebSocket = require('ws');
-const axios = require('axios');
+const fetch = require('node-fetch');  // Changed here
 
 // Create HTTP server
 const server = http.createServer();
@@ -8,7 +8,7 @@ const wss = new WebSocket.Server({ server });
 console.log('✅ WebSocket Server initialized');
 
 let currentMode = 'attendance'; // Modes: 'assign' or 'attendance'
-const API_URL = 'https://smartmonitoringsystem.infy.uk/api/check_rfid.php'; // Separate API URL
+const API_URL = 'https://smartmonitoringsystem.infy.uk/check_rfid.php'; // Separate API URL
 
 // Broadcast message to all connected WebSocket clients
 function broadcast(data) {
@@ -57,8 +57,10 @@ wss.on('connection', (ws) => {
 async function handleRfidScan(ws, rfidTag) {
   try {
     if (currentMode === 'assign') {
-      const res = await axios.get(`${API_URL}?rfid=${rfidTag}`);
-      if (res.data.exists) {
+      const response = await fetch(`${API_URL}?rfid=${rfidTag}`);
+      const data = await response.json();
+
+      if (data.exists) {
         broadcast({
           type: 'rfid_exists',
           message: 'RFID already assigned',
