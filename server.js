@@ -41,6 +41,9 @@ wss.on('connection', (ws) => {
               params: { rfid: rfidTag },
               timeout: 5000,
             });
+            
+            // 🔎 Log the full API response to see what it returns
+            console.log('🔎 API Response:', response.data);
 
             // Assuming your API returns { exists: true/false }
             if (response.data.exists) {
