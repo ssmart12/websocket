@@ -1,6 +1,5 @@
 const http = require('http');
 const WebSocket = require('ws');
-// const fetch = require('node-fetch');  <-- REMOVE this line
 
 // Create HTTP server
 const server = http.createServer();
