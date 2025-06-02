@@ -34,7 +34,7 @@ wss.on('connection', (ws) => {
         case 'rfid_scan':
           await handleRfidScan(ws, data.rfid);
           break;
-        
+
         case 'set_mode':
           await handleSetMode(ws, data.mode);
           break;
@@ -58,13 +58,17 @@ async function handleRfidScan(ws, rfidTag) {
   try {
     if (currentMode === 'assign') {
       const res = await axios.get(`${API_URL}?rfid=${rfidTag}`);
+      console.log('API response:', res.data);  // Debug API response
+
       if (res.data.exists) {
-        broadcast({
+        // Send only to the scanning client
+        ws.send(JSON.stringify({
           type: 'rfid_exists',
           message: 'RFID already assigned',
           rfid: rfidTag,
-        });
+        }));
       } else {
+        // Broadcast to all clients if RFID is new
         broadcast({
           type: 'assign_rfid',
           rfid: rfidTag,
