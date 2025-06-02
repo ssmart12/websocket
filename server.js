@@ -1,5 +1,6 @@
 const http = require('http');
 const WebSocket = require('ws');
+const fetch = require('node-fetch'); // Make sure this is installed
 
 // Create HTTP server
 const server = http.createServer();
@@ -54,9 +55,16 @@ wss.on('connection', (ws) => {
 async function handleRfidScan(ws, rfidTag) {
   try {
     if (currentMode === 'assign') {
-      const response = await fetch(`${API_URL}?rfid=${rfidTag}`);
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data = await response.json();
+      const res = await fetch(`${API_URL}?rfid=${rfidTag}`);
+      const rawText = await res.text();
+      console.log('📄 Raw API response:', rawText);
+
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch (parseErr) {
+        throw new Error('Invalid JSON: ' + parseErr.message);
+      }
 
       if (data.exists) {
         broadcast({
